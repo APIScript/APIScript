@@ -5,6 +5,7 @@ import {RequestMethod} from "../api/request-method";
 import {readProperty} from "./property-reader";
 import {readPropertyType} from "./property-type-reader";
 import {Group} from "../api/group";
+import {PropertyType} from "../api/property/property-type";
 
 export function readEndpoint(reader: FileReader, parent: Group, requestMethod: RequestMethod): Endpoint {
 
@@ -14,25 +15,41 @@ export function readEndpoint(reader: FileReader, parent: Group, requestMethod: R
     let endpoint: BasicEndpoint;
     reader.skipWhitespace();
 
+    let requestType: PropertyType;
+    let returnType: PropertyType;
+
     if (reader.isCharacter('{')) {
         reader.next();
         reader.skipWhitespace();
-
-        endpoint = new BasicEndpoint(name, parent, requestMethod);
-
     } else {
 
-        reader.assertString('returns');
-        reader.skipWhitespace();
+        while (!reader.isCharacter('{')) {
+            let modifier = reader.readWord();
 
-        let returnType = readPropertyType(reader);
-        reader.skipWhitespace();
+            if (modifier === 'requests') {
+                if (requestType) { reader.error('Request has already been defined'); }
+                reader.skipWhitespace();
+
+                requestType = readPropertyType(reader);
+                reader.skipWhitespace();
+
+            } else if (modifier === 'returns') {
+                if (returnType) { reader.error('Returns has already been defined'); }
+                reader.skipWhitespace();
+
+                returnType = readPropertyType(reader);
+                reader.skipWhitespace();
+
+            } else {
+                reader.error(`Unrecognised modifier ${modifier}`);
+            }
+        }
 
         reader.assertCharacter('{');
         reader.skipWhitespace();
-
-        endpoint = new BasicEndpoint(name, parent, requestMethod, returnType);
     }
+
+    endpoint = new BasicEndpoint(name, parent, requestMethod, requestType, returnType);
 
     while (!reader.isCharacter('}') || closureIndex != reader.closureIndex) {
         endpoint.addProperty(readProperty(reader));
