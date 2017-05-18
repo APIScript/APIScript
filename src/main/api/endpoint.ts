@@ -8,6 +8,7 @@ export interface Endpoint {
     readonly name: string;
     readonly parent: Group;
     readonly requestMethod: RequestMethod;
+    readonly requestType?: PropertyType;
     readonly returnType?: PropertyType;
     readonly url: string;
 
@@ -20,7 +21,9 @@ export class BasicEndpoint implements Endpoint {
     private properties: Property[] = [];
 
     public constructor(readonly name: string, readonly parent: Group,
-                       readonly requestMethod: RequestMethod, readonly returnType?: PropertyType) {}
+                       readonly requestMethod: RequestMethod,
+                       readonly requestType?: PropertyType,
+                       readonly returnType?: PropertyType) {}
 
     public get url() {
         let url = this.name;
