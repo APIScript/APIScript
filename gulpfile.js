@@ -16,11 +16,10 @@ gulp.task('clean:package', function() {
 
 gulp.task('build:src', function () {
 
+    var config = typescript.createProject('tsconfig.json');
+
     return gulp.src('src/**/*.ts')
-        .pipe(typescript({
-            target: 'es5',
-            declaration: true
-        }))
+        .pipe(config())
         .pipe(gulp.dest('build'));
 });
 
