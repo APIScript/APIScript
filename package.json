@@ -1,5 +1,5 @@
 {
-  "name": "apiset",
+  "name": "apiscript",
   "version": "1.0.0",
   "description": "The simple API scripting language.",
   "main": "build/main/index.js",
@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "apiset",
+    "apiscript",
     "api"
   ],
   "author": "Cytren",

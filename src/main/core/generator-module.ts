@@ -6,14 +6,14 @@ export type GeneratorModule = [string, string];
 
 export function listGeneratorModules(dir: string): GeneratorModule[] {
 
-    let approvedDir = path.normalize(dir + "/@apiset");
+    let approvedDir = path.normalize(dir + "/@apiscript");
     let result = [];
 
     let modules = fs.readdirSync(dir);
 
     for (let module of modules) {
 
-        if (module.length > 17 && module.substring(0, 17) === "apiset-generator-") {
+        if (module.length > 17 && module.substring(0, 17) === "apiscript-generator-") {
             let generatorModule = [module.substring(17), path.normalize(dir + "/" + module)];
             result.push(generatorModule);
         }
