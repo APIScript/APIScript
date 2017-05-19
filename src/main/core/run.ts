@@ -13,7 +13,7 @@ const globalPath = process.platform === "win32" ? path.normalize(process.env.APP
     path.normalize("/usr/local/lib/node_modules");
 
 const localPath = path.normalize("node_modules");
-const configFile = "./apiset.json";
+const configFile = "./apiscript.json";
 
 function runGenerator(api: API, module: GeneratorModule, config: Config) {
     let generator = require(module[1]) as Generator;
@@ -27,7 +27,7 @@ function runGenerator(api: API, module: GeneratorModule, config: Config) {
 
 export function run(globalConfig: Config = {}) {
 
-    // load from apiset.json and merge with config
+    // load from apiscript.json and merge with config
     if (fs.existsSync(configFile)) {
         let loadedData = fs.readFileSync(configFile, "UTF-8");
         let loadedConfig = JSON.parse(loadedData);
@@ -37,7 +37,7 @@ export function run(globalConfig: Config = {}) {
         globalConfig = configUtil.duplicateConfig(globalConfig);
     }
 
-    let config = globalConfig.apiset;
+    let config = globalConfig.apiscript;
     if (!config) { config = {}; }
 
     if (!config.list) {
