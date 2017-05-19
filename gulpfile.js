@@ -5,7 +5,6 @@ var typescript = require('gulp-typescript');
 var sequence = require('gulp-sequence');
 var mocha = require('gulp-mocha');
 var json = require('gulp-json-editor');
-var dts = require('dts-generator').default;
 
 gulp.task('clean:build', function() {
     return del(['build/**/*']);
@@ -15,27 +14,12 @@ gulp.task('clean:package', function() {
     return del(['package/**/*']);
 });
 
-gulp.task('build:types', function() {
-
-    var resolveModuleId = function (params) {
-        if (params.currentModuleId === 'index') {
-            return 'apiset';
-        }
-    };
-
-    dts({
-        name: "apiset",
-        project: 'src/main',
-        out: 'build/main/index.d.ts',
-        resolveModuleId: resolveModuleId
-    });
-});
-
 gulp.task('build:src', function () {
 
     return gulp.src('src/**/*.ts')
         .pipe(typescript({
-            target: 'es5'
+            target: 'es5',
+            declaration: true
         }))
         .pipe(gulp.dest('build'));
 });
@@ -66,5 +50,5 @@ gulp.task('test', ['build'], function() {
 });
 
 gulp.task('clean', ['clean:build', 'clean:package']);
-gulp.task('build', sequence('clean:build', 'build:types', 'build:src'));
+gulp.task('build', sequence('clean:build', 'build:src'));
 gulp.task('package', sequence('clean:package', 'build', 'package:src', 'package:license', 'package:package.json'));
