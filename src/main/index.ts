@@ -16,6 +16,4 @@ export * from "./api/property/primitive-type";
 export * from "./api/property/entity-type";
 
 export * from "./core/generator";
-
-import {run} from "./core/run";
-export default run;
+export * from "./core/run";
