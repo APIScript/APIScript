@@ -19,5 +19,3 @@ export * from "./core/generator";
 
 import {run} from "./core/run";
 export default run;
-
-module.exports = run;
