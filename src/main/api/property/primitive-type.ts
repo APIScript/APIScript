@@ -34,8 +34,4 @@ export module PrimitivePropertyType {
     export const Float = new FloatPropertyType('Float');
     export const Boolean = new BooleanPropertyType('Boolean');
     export const String = new StringPropertyType('String');
-
-    function isPrimitive(name: string) {
-        return name === 'integer' || name === 'float' || name === 'boolean' || name === 'string';
-    }
 }

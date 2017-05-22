@@ -9,7 +9,7 @@ import {readEndpoint} from "./endpoint-reader";
 export function readGroup(reader: FileReader, parent: Group): Group {
 
     let closureIndex = reader.closureIndex;
-    let group = new BasicGroup(reader.readString(), parent);
+    let group = new BasicGroup(reader.readWord(), parent);
 
     reader.skipWhitespace();
     reader.assertCharacter('{');

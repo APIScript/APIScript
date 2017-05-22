@@ -10,7 +10,7 @@ import {PropertyType} from "../api/property/property-type";
 export function readEndpoint(reader: FileReader, parent: Group, requestMethod: RequestMethod): Endpoint {
 
     let closureIndex = reader.closureIndex;
-    let name = reader.readString();
+    let name = reader.readWord();
 
     let endpoint: BasicEndpoint;
     reader.skipWhitespace();

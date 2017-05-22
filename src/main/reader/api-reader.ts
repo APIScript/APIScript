@@ -20,8 +20,8 @@ export function readAPI(file: string): API {
     reader.assertString('api');
     reader.skipWhitespace();
 
-    if (reader.isCharacter('\"') || reader.isCharacter('\'')) {
-        api = new BasicAPI(reader.readString());
+    if (!reader.isCharacter('{')) {
+        api = new BasicAPI(reader.readWord());
         reader.skipWhitespace();
     } else {
         api = new BasicAPI('api');

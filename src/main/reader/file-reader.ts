@@ -105,7 +105,7 @@ export class FileReader {
     }
 
     isWordCharacter(): boolean {
-        return /[a-zA-Z_0-9]/.test(this.character());
+        return /[a-zA-Z_0-9-]/.test(this.character());
     }
 
     isWhitespace(): boolean {
