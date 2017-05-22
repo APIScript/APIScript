@@ -4,7 +4,6 @@ import {PropertyType} from "../api/property/property-type";
 import {ListPropertyType} from "../api/property/list-type";
 import {SetPropertyType} from "../api/property/set-type";
 import {MapPropertyType} from "../api/property/map-type";
-import * as Type from '../api/property/property-type';
 
 export function readPropertyType(reader: FileReader): PropertyType {
 
@@ -44,7 +43,7 @@ export function readPropertyType(reader: FileReader): PropertyType {
 
     } else {
         reader.skipWhitespaceOnLine();
-        type = Type.getPropertyType(reader.readWord());
+        type = PropertyType.getPropertyType(reader.readWord());
         reader.skipWhitespaceOnLine();
     }
 

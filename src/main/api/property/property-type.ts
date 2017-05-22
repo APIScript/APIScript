@@ -16,14 +16,17 @@ export interface PropertyType {
     readonly isMap: boolean;
 }
 
-export function getPropertyType(name: string): PropertyType {
+export namespace PropertyType {
 
-    switch (name) {
-        case 'integer': return PrimitivePropertyType.Integer;
-        case 'float': return PrimitivePropertyType.Float;
-        case 'boolean': return PrimitivePropertyType.Boolean;
-        case 'string': return PrimitivePropertyType.String;
+    export function getPropertyType(name: string): PropertyType {
 
-        default: return new EntityPropertyType(name);
+        switch (name) {
+            case 'integer': return PrimitivePropertyType.Integer;
+            case 'float': return PrimitivePropertyType.Float;
+            case 'boolean': return PrimitivePropertyType.Boolean;
+            case 'string': return PrimitivePropertyType.String;
+
+            default: return new EntityPropertyType(name);
+        }
     }
 }
