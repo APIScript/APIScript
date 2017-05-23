@@ -1,10 +1,11 @@
 
-import {FileReader} from "./file-reader";
+import {FileReader} from "./file";
 import {Property} from "../property/property";
 import {PropertyType} from "../property/type/property-type";
-import {readPropertyType} from "./property-type-reader";
+import {readPropertyType} from "./property-type";
+import {API} from "../api/api";
 
-export function readProperty(reader: FileReader): Property {
+export function readProperty(reader: FileReader, api: API): Property {
 
     let name = reader.readWord();
 
@@ -12,7 +13,7 @@ export function readProperty(reader: FileReader): Property {
     reader.assertCharacter(':');
     reader.skipWhitespaceOnLine();
 
-    let type: PropertyType = readPropertyType(reader);
+    let type: PropertyType = readPropertyType(reader, api);
 
     let isOptional = false;
     let constraints: string = null;

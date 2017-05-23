@@ -1,12 +1,13 @@
 
-import {FileReader} from "./file-reader";
+import {FileReader} from "./file";
 import {RequestMethod} from "../api/request-method";
 import {Group, BasicGroup} from "../api/group";
 
-import {readProperty} from "./property-reader";
-import {readEndpoint} from "./endpoint-reader";
+import {readProperty} from "./property";
+import {readEndpoint} from "./endpoint";
+import {API} from "../api/api";
 
-export function readGroup(reader: FileReader, parent: Group): Group {
+export function readGroup(reader: FileReader, api: API, parent: Group): Group {
 
     let closureIndex = reader.closureIndex;
     let group = new BasicGroup(reader.readWord(), parent);
@@ -28,17 +29,17 @@ export function readGroup(reader: FileReader, parent: Group): Group {
             reader.include(value);
 
         } else if (instruction === 'inject') {
-            group.addInject(readProperty(reader));
+            group.addInject(readProperty(reader, api));
         } else if (instruction === 'get') {
-            group.addEndpoint(readEndpoint(reader, group, RequestMethod.Get));
+            group.addEndpoint(readEndpoint(reader, api, group, RequestMethod.Get));
         } else if (instruction === 'post') {
-            group.addEndpoint(readEndpoint(reader, group, RequestMethod.Post));
+            group.addEndpoint(readEndpoint(reader, api, group, RequestMethod.Post));
         } else if (instruction === 'put') {
-            group.addEndpoint(readEndpoint(reader, group, RequestMethod.Put));
+            group.addEndpoint(readEndpoint(reader, api, group, RequestMethod.Put));
         } else if (instruction === 'delete') {
-            group.addEndpoint(readEndpoint(reader, group, RequestMethod.Delete));
+            group.addEndpoint(readEndpoint(reader, api, group, RequestMethod.Delete));
         } else if (instruction === 'group') {
-            group.addGroup(readGroup(reader, group));
+            group.addGroup(readGroup(reader, api, group));
         } else {
             reader.error(`Invalid instruction "${instruction}"`);
         }

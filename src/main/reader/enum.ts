@@ -1,5 +1,5 @@
 
-import {FileReader} from "./file-reader";
+import {FileReader} from "./file";
 import {Enum, BasicEnum} from "../api/enum";
 
 export function readEnum(reader: FileReader): Enum {
@@ -13,7 +13,14 @@ export function readEnum(reader: FileReader): Enum {
 
     while (!reader.isCharacter('}') || closureIndex != reader.closureIndex) {
         enumValue.addValue(reader.readWord());
-        reader.skipWhitespace();
+        reader.skipWhitespaceOnLine();
+
+        if (reader.isCharacter(',')) {
+            reader.next();
+            reader.skipWhitespaceOnLine();
+        } else {
+            reader.skipWhitespace();
+        }
     }
 
     reader.assertCharacter('}');

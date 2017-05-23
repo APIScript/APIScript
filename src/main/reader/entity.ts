@@ -1,9 +1,10 @@
 
-import {FileReader} from "./file-reader";
+import {FileReader} from "./file";
 import {Entity, BasicEntity} from "../api/entity";
-import {readProperty} from "./property-reader";
+import {readProperty} from "./property";
+import {API} from "../api/api";
 
-export function readEntity(reader: FileReader): Entity {
+export function readEntity(reader: FileReader, api: API): Entity {
 
     let closureIndex = reader.closureIndex;
 
@@ -32,7 +33,7 @@ export function readEntity(reader: FileReader): Entity {
     }
 
     while (!reader.isCharacter('}') || closureIndex != reader.closureIndex) {
-        entity.addProperty(readProperty(reader));
+        entity.addProperty(readProperty(reader, api));
     }
     reader.next();
 

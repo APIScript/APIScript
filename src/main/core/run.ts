@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as configUtil from './config-util';
 
-import {readAPI} from "../reader/api-reader";
+import {readAPI} from "../reader/api";
 import {GeneratorModule} from "./generator-module";
 import {listGeneratorModules} from "./generator-module";
 import {API} from "../api/api";

@@ -1,14 +1,15 @@
 
-import {FileReader} from "./file-reader";
+import {FileReader} from "./file";
 import {PropertyType} from "../property/type/property-type";
 import {ListPropertyType, SetPropertyType, MapPropertyType} from "../property/type/collection";
 import {FloatPropertyType, IntegerPropertyType, BooleanPropertyType, StringPropertyType} from "../property/type/primitive";
-import {EntityPropertyType} from "../property/type/custom";
-import {readProperty} from "./property-reader";
+import {EntityPropertyType, EnumPropertyType} from "../property/type/custom";
+import {readProperty} from "./property";
 import {Property} from "../property/property";
 import {BasicClosurePropertyType} from "../property/type/closure";
+import {API} from "../api/api";
 
-export function readPropertyType(reader: FileReader): PropertyType {
+export function readPropertyType(reader: FileReader, api: API): PropertyType {
 
     let type: PropertyType;
 
@@ -19,7 +20,7 @@ export function readPropertyType(reader: FileReader): PropertyType {
         let properties: Property[] = [];
 
         while (!reader.isCharacter('}')) {
-            properties.push(readProperty(reader));
+            properties.push(readProperty(reader, api));
             reader.skipWhitespace();
         }
 
@@ -30,7 +31,7 @@ export function readPropertyType(reader: FileReader): PropertyType {
 
     } else if (reader.isCharacter('[')) {
         reader.next();
-        type = new ListPropertyType(readPropertyType(reader));
+        type = new ListPropertyType(readPropertyType(reader, api));
 
         reader.assertCharacter(']');
         reader.skipWhitespaceOnLine();
@@ -38,7 +39,7 @@ export function readPropertyType(reader: FileReader): PropertyType {
     } else if (reader.isCharacter('<')) {
 
         reader.next();
-        let firstType = readPropertyType(reader);
+        let firstType = readPropertyType(reader, api);
 
         if (reader.isCharacter('>')) {
             type = new SetPropertyType(firstType);
@@ -50,7 +51,7 @@ export function readPropertyType(reader: FileReader): PropertyType {
             reader.next();
             reader.skipWhitespaceOnLine();
 
-            let secondType = readPropertyType(reader);
+            let secondType = readPropertyType(reader, api);
             type = new MapPropertyType(firstType, secondType);
 
             reader.assertCharacter('>');
@@ -62,20 +63,29 @@ export function readPropertyType(reader: FileReader): PropertyType {
 
     } else {
         reader.skipWhitespaceOnLine();
-        type = getWordType(reader.readWord());
+        type = getWordType(reader.readWord(), api);
         reader.skipWhitespaceOnLine();
     }
 
     return type;
 }
 
-function getWordType(name: string): PropertyType {
-    // TODO DISTINGUISH BETWEEN ENTITY AND ENUM
+function getWordType(name: string, api: API): PropertyType {
+    let result: PropertyType;
 
-    if (name === 'integer') { return new IntegerPropertyType(); }
-    if (name === 'float') { return new FloatPropertyType(); }
-    if (name === 'boolean') { return new BooleanPropertyType(); }
-    if (name === 'string') { return new StringPropertyType(); }
+    api.forEachEnum((enumerator) => {
+        if (enumerator.name === name) { result = new EnumPropertyType(name); }
+    });
 
-    return new EntityPropertyType(name);
+    api.forEachEntity((entity) => {
+        if (entity.name === name) { result = new EntityPropertyType(name); }
+    });
+
+    if (name === 'integer') { result = new IntegerPropertyType(); }
+    if (name === 'float') { result = new FloatPropertyType(); }
+    if (name === 'boolean') { result = new BooleanPropertyType(); }
+    if (name === 'string') { result = new StringPropertyType(); }
+
+    if (result == null) { throw new Error(`Could not find type ${name}`); }
+    return result;
 }
