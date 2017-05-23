@@ -1,9 +1,8 @@
 
 import {FileReader} from "./file-reader";
-import {Property} from "../api/property/property";
-import {PropertyType} from "../api/property/property-type";
+import {Property} from "../property/property";
+import {PropertyType} from "../property/type/property-type";
 import {readPropertyType} from "./property-type-reader";
-import {PrimitivePropertyType} from "../api/property/primitive-type";
 
 export function readProperty(reader: FileReader): Property {
 
@@ -43,11 +42,12 @@ export function readProperty(reader: FileReader): Property {
             reader.next();
             reader.skipWhitespaceOnLine();
 
-            if (!type.isPrimitive) {
+            let primitive = type.asPrimitive;
+            if (!primitive) {
                 reader.error('A default type can only be set on a primitive property');
             }
 
-            if (type === PrimitivePropertyType.String) {
+            if (primitive.asString) {
                 defaultValue = reader.readString();
             } else {
                 defaultValue = reader.readToSpace();

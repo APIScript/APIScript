@@ -5,7 +5,7 @@ import {RequestMethod} from "../api/request-method";
 import {readProperty} from "./property-reader";
 import {readPropertyType} from "./property-type-reader";
 import {Group} from "../api/group";
-import {PropertyType} from "../api/property/property-type";
+import {PropertyType} from "../property/type/property-type";
 
 export function readEndpoint(reader: FileReader, parent: Group, requestMethod: RequestMethod): Endpoint {
 

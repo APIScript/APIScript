@@ -1,7 +1,7 @@
 
 import {RequestMethod} from "./request-method";
-import {Property} from "./property/property";
-import {PropertyType} from "./property/property-type";
+import {Property} from "../property/property";
+import {PropertyType} from "../property/type/property-type";
 import {Group} from "./group";
 
 export interface Endpoint {

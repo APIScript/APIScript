@@ -1,5 +1,5 @@
 
-import {Property} from "./property/property";
+import {Property} from "../property/property";
 import {Endpoint} from "./endpoint";
 
 export interface Group {

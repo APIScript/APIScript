@@ -1,15 +1,34 @@
 
 import {FileReader} from "./file-reader";
-import {PropertyType} from "../api/property/property-type";
-import {ListPropertyType} from "../api/property/list-type";
-import {SetPropertyType} from "../api/property/set-type";
-import {MapPropertyType} from "../api/property/map-type";
+import {PropertyType} from "../property/type/property-type";
+import {ListPropertyType, SetPropertyType, MapPropertyType} from "../property/type/collection";
+import {FloatPropertyType, IntegerPropertyType, BooleanPropertyType, StringPropertyType} from "../property/type/primitive";
+import {EntityPropertyType} from "../property/type/custom";
+import {readProperty} from "./property-reader";
+import {Property} from "../property/property";
+import {BasicClosurePropertyType} from "../property/type/closure";
 
 export function readPropertyType(reader: FileReader): PropertyType {
 
     let type: PropertyType;
 
-    if (reader.isCharacter('[')) {
+    if (reader.isCharacter('{')) {
+        reader.next();
+        reader.skipWhitespace();
+
+        let properties: Property[] = [];
+
+        while (!reader.isCharacter('}')) {
+            properties.push(readProperty(reader));
+            reader.skipWhitespace();
+        }
+
+        type = new BasicClosurePropertyType(properties);
+
+        reader.next();
+        reader.skipWhitespaceOnLine();
+
+    } else if (reader.isCharacter('[')) {
         reader.next();
         type = new ListPropertyType(readPropertyType(reader));
 
@@ -43,9 +62,20 @@ export function readPropertyType(reader: FileReader): PropertyType {
 
     } else {
         reader.skipWhitespaceOnLine();
-        type = PropertyType.getPropertyType(reader.readWord());
+        type = getWordType(reader.readWord());
         reader.skipWhitespaceOnLine();
     }
 
     return type;
+}
+
+function getWordType(name: string): PropertyType {
+    // TODO DISTINGUISH BETWEEN ENTITY AND ENUM
+
+    if (name === 'integer') { return new IntegerPropertyType(); }
+    if (name === 'float') { return new FloatPropertyType(); }
+    if (name === 'boolean') { return new BooleanPropertyType(); }
+    if (name === 'string') { return new StringPropertyType(); }
+
+    return new EntityPropertyType(name);
 }

@@ -1,5 +1,5 @@
 
-import {Property} from "./property/property";
+import {Property} from "../property/property";
 
 export interface Entity {
     readonly name: string;
