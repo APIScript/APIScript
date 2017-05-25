@@ -2,62 +2,36 @@
 import {FileReader} from "./file";
 import {Endpoint, BasicEndpoint} from "../api/endpoint";
 import {RequestMethod} from "../api/request-method";
-import {readProperty} from "./property";
 import {readPropertyType} from "./property-type";
 import {Group} from "../api/group";
-import {PropertyType} from "../property/type/property-type";
 import {API} from "../api/api";
 
 export function readEndpoint(reader: FileReader, api: API, parent: Group, requestMethod: RequestMethod): Endpoint {
-
-    let closureIndex = reader.closureIndex;
-    let name = reader.readWord();
-
-    let endpoint: BasicEndpoint;
+    let endpoint = new BasicEndpoint(reader.readWord(), parent, requestMethod);
     reader.skipWhitespace();
 
-    let requestType: PropertyType;
-    let returnType: PropertyType;
+    while (!reader.isCharacter('\n')) {
+        let modifier = reader.readWord();
+        reader.skipWhitespaceOnLine();
 
-    if (reader.isCharacter('{')) {
-        reader.next();
-        reader.skipWhitespace();
-    } else {
+        if (modifier === 'request') {
+            if (endpoint.requestType) { reader.error('Request has already been defined'); }
+            endpoint.requestType = readPropertyType(reader, api);
 
-        while (!reader.isCharacter('{')) {
-            let modifier = reader.readWord();
+        } else if (modifier === 'body') {
+            if (endpoint.bodyType) { reader.error('Body has already been defined'); }
+            endpoint.bodyType = readPropertyType(reader, api);
 
-            if (modifier === 'requests') {
-                if (requestType) { reader.error('Request has already been defined'); }
-                reader.skipWhitespace();
-
-                requestType = readPropertyType(reader, api);
-                reader.skipWhitespace();
-
-            } else if (modifier === 'returns') {
-                if (returnType) { reader.error('Returns has already been defined'); }
-                reader.skipWhitespace();
-
-                returnType = readPropertyType(reader, api);
-                reader.skipWhitespace();
-
-            } else {
-                reader.error(`Unrecognised modifier ${modifier}`);
-            }
+        } else if (modifier === 'response') {
+            if (endpoint.responseType) { reader.error('Response has already been defined'); }
+            endpoint.responseType = readPropertyType(reader, api);
+        } else {
+            reader.error(`Unrecognised modifier ${modifier}`);
         }
 
-        reader.assertCharacter('{');
-        reader.skipWhitespace();
+        reader.skipWhitespaceOnLine();
     }
 
-    endpoint = new BasicEndpoint(name, parent, requestMethod, requestType, returnType);
-
-    while (!reader.isCharacter('}') || closureIndex != reader.closureIndex) {
-        endpoint.addProperty(readProperty(reader, api));
-    }
-
-    reader.assertCharacter('}');
     reader.skipWhitespace();
-
     return endpoint;
 }

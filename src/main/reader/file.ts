@@ -135,10 +135,9 @@ export class FileReader {
     }
 
     readWord(): string {
+        if (this.isNumber()) { this.error('Word cannot begin with number character'); }
+        if (!this.isWordCharacter()) { this.error(`Expecting word character found "${this.character()}"`); }
 
-        if (this.isNumber()) {
-            this.error('Word cannot begin with number character');
-        }
         let text = '';
 
         while (!this.isWhitespace() && this.isWordCharacter()) {

@@ -7,7 +7,6 @@ export interface Enum {
 }
 
 export class BasicEnum implements Enum {
-
     private values: string[] = [];
 
     public constructor(readonly name: string) {}

@@ -4,29 +4,14 @@ import {PropertyType} from "../property/type/property-type";
 import {ListPropertyType, SetPropertyType, MapPropertyType} from "../property/type/collection";
 import {FloatPropertyType, IntegerPropertyType, BooleanPropertyType, StringPropertyType} from "../property/type/primitive";
 import {EntityPropertyType, EnumPropertyType} from "../property/type/custom";
-import {readProperty} from "./property";
-import {Property} from "../property/property";
-import {BasicClosurePropertyType} from "../property/type/closure";
 import {API} from "../api/api";
+import {readClosure} from "./closure";
 
 export function readPropertyType(reader: FileReader, api: API): PropertyType {
-
     let type: PropertyType;
 
     if (reader.isCharacter('{')) {
-        reader.next();
-        reader.skipWhitespace();
-
-        let properties: Property[] = [];
-
-        while (!reader.isCharacter('}')) {
-            properties.push(readProperty(reader, api));
-            reader.skipWhitespace();
-        }
-
-        type = new BasicClosurePropertyType(properties);
-
-        reader.next();
+        type = readClosure(reader, api);
         reader.skipWhitespaceOnLine();
 
     } else if (reader.isCharacter('[')) {

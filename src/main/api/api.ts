@@ -12,7 +12,6 @@ export interface API extends Group {
 }
 
 export class BasicAPI extends BasicGroup implements API {
-
     private entities: Entity[] = [];
     private enums: Enum[] = [];
 

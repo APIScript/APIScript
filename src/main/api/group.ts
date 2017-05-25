@@ -22,7 +22,6 @@ export interface Group {
 }
 
 export class BasicGroup implements Group {
-
     private injects: Property[] = [];
     private groups: Group[] = [];
     private endpoints: Endpoint[] = [];

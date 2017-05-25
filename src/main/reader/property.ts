@@ -6,7 +6,6 @@ import {readPropertyType} from "./property-type";
 import {API} from "../api/api";
 
 export function readProperty(reader: FileReader, api: API): Property {
-
     let name = reader.readWord();
 
     reader.skipWhitespaceOnLine();
@@ -14,12 +13,13 @@ export function readProperty(reader: FileReader, api: API): Property {
     reader.skipWhitespaceOnLine();
 
     let type: PropertyType = readPropertyType(reader, api);
+    reader.skipWhitespaceOnLine();
 
     let isOptional = false;
     let constraints: string = null;
     let defaultValue: string = null;
 
-    while (!reader.isCharacter(';') && !reader.isCharacter('\n')) {
+    while (!reader.isCharacter(',') && !reader.isCharacter('\n') && !reader.isCharacter('}')) {
 
         if (reader.isCharacter('?')) {
             if (isOptional) {
@@ -72,8 +72,6 @@ export function readProperty(reader: FileReader, api: API): Property {
 
     }
 
-    reader.next();
     reader.skipWhitespace();
-
     return new Property(name, type, constraints, isOptional, defaultValue);
 }
