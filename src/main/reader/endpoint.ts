@@ -25,8 +25,8 @@ export function readEndpoint(reader: FileReader, api: API, parent: Group, reques
             endpoint.bodyType = readPropertyType(reader, api);
 
         } else if (modifier === 'response') {
-            if (endpoint.responseType) { reader.error('Response has already been defined'); }
-            endpoint.responseType = readPropertyType(reader, api);
+            if (endpoint.respondType) { reader.error('Response has already been defined'); }
+            endpoint.respondType = readPropertyType(reader, api);
         } else {
             reader.error(`Unrecognised modifier ${modifier}`);
         }

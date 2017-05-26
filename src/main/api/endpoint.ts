@@ -9,14 +9,14 @@ export interface Endpoint {
     readonly requestMethod: RequestMethod;
     readonly requestType?: PropertyType;
     readonly bodyType?: PropertyType;
-    readonly responseType?: PropertyType;
+    readonly respondType?: PropertyType;
     readonly url: string;
 }
 
 export class BasicEndpoint implements Endpoint {
     public requestType?: PropertyType;
     public bodyType?: PropertyType;
-    public responseType?: PropertyType;
+    public respondType?: PropertyType;
 
     public constructor(readonly name: string, readonly parent: Group,
                        readonly requestMethod: RequestMethod, readonly documentation?: string) {}
