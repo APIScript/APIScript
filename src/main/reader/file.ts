@@ -63,12 +63,10 @@ export class FileReader {
                 } else {
                     this.docComment += ' ';
                 }
-                
+
                 this.skipWhitespaceOnLine();
                 this.docComment += this.readToNewLine();
                 this.step();
-
-                console.log(this.documentation);
 
             } else if (this.isCharacter('{')) {
                 this.closureLevel++;
