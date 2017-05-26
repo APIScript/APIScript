@@ -6,6 +6,7 @@ import {readPropertyType} from "./property-type";
 import {API} from "../api/api";
 
 export function readProperty(reader: FileReader, api: API): Property {
+    let documentation = reader.documentation;
     let name = reader.readWord();
 
     reader.skipWhitespaceOnLine();
@@ -73,5 +74,5 @@ export function readProperty(reader: FileReader, api: API): Property {
     }
 
     reader.skipWhitespace();
-    return new Property(name, type, constraints, isOptional, defaultValue);
+    return new Property(name, type, constraints, isOptional, defaultValue, documentation);
 }

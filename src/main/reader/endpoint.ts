@@ -7,7 +7,9 @@ import {Group} from "../api/group";
 import {API} from "../api/api";
 
 export function readEndpoint(reader: FileReader, api: API, parent: Group, requestMethod: RequestMethod): Endpoint {
-    let endpoint = new BasicEndpoint(reader.readWord(), parent, requestMethod);
+    let documentation = reader.documentation;
+    let endpoint = new BasicEndpoint(reader.readWord(), parent, requestMethod, documentation);
+
     reader.skipWhitespace();
 
     while (!reader.isCharacter('\n')) {

@@ -18,7 +18,8 @@ export class BasicEndpoint implements Endpoint {
     public bodyType?: PropertyType;
     public responseType?: PropertyType;
 
-    public constructor(readonly name: string, readonly parent: Group, readonly requestMethod: RequestMethod) {}
+    public constructor(readonly name: string, readonly parent: Group,
+                       readonly requestMethod: RequestMethod, readonly documentation?: string) {}
 
     public get url() {
         let url = this.name;

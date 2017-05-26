@@ -13,13 +13,15 @@ export class FileReader {
     private data: string;
     private isReadingString = false;
 
+    private docComment: string = null;
+    private docLine: number = -1;
+
     public constructor(private file: string) {
         this.data = shell.cat(file).toString();
         this.next();
     }
 
     include(file: string) {
-
         let fileDir = path.dirname(this.file);
 
         if (fileDir !== ".") {
@@ -38,6 +40,8 @@ export class FileReader {
         this.characterIndex++;
 
         if (this.isNewLine()) {
+            if (this.lineIndex != this.docLine) { this.docComment = null; }
+
             this.lineIndex++;
             this.characterIndex = 1;
         }
@@ -70,6 +74,22 @@ export class FileReader {
                 } else {
                     this.error(`Unexpected character "${this.character()}", was expecting "/" or "*"`);
                 }
+            } else if (this.isCharacter('#')) {
+                this.step();
+
+                this.docLine = this.lineIndex;
+
+                if (!this.docComment) {
+                    this.docComment = '';
+                } else {
+                    this.docComment += ' ';
+                }
+
+                this.skipWhitespaceOnLine();
+
+                this.docComment += this.readToNewLine();
+                this.step();
+
             } else if (this.isCharacter('{')) {
                 this.closureLevel++;
             } else if (this.isCharacter('}')) {
@@ -90,6 +110,10 @@ export class FileReader {
 
     get closureIndex() {
         return this.closureLevel;
+    }
+
+    get documentation() {
+        return this.docComment;
     }
 
     isNewLine(): boolean {
@@ -170,10 +194,21 @@ export class FileReader {
         return text;
     }
 
-    readToSpace() {
+    readToSpace(): string {
         let text = '';
 
         while (!this.isWhitespace()) {
+            text += this.character();
+            this.next();
+        }
+
+        return text;
+    }
+
+    readToNewLine(): string {
+        let text = '';
+
+        while (!this.isCharacter('\r') && !this.isCharacter('\n')) {
             text += this.character();
             this.next();
         }

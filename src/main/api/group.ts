@@ -27,7 +27,7 @@ export class BasicGroup implements Group {
     private endpoints: Endpoint[] = [];
     private imports: string[] = [];
 
-    public constructor(readonly name: string, readonly parent: Group) {}
+    public constructor(readonly name: string, readonly parent: Group, readonly documentation?: string) {}
 
     public get url() {
         let url = this.name;

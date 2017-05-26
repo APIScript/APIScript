@@ -10,21 +10,22 @@ import {readEndpoint} from "./endpoint";
 import {readGroup} from "./group";
 
 export function readAPI(file: string): API {
-
     let reader = new FileReader(file);
     let closureIndex = reader.closureIndex;
 
     let api: BasicAPI;
 
     reader.skipWhitespace();
+    let documentation = reader.documentation;
+
     reader.assertString('api');
     reader.skipWhitespace();
 
     if (!reader.isCharacter('{')) {
-        api = new BasicAPI(reader.readWord());
+        api = new BasicAPI(reader.readWord(), documentation);
         reader.skipWhitespace();
     } else {
-        api = new BasicAPI('api');
+        api = new BasicAPI('api', documentation);
     }
 
     reader.assertCharacter('{');

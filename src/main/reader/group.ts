@@ -8,15 +8,14 @@ import {readEndpoint} from "./endpoint";
 import {API} from "../api/api";
 
 export function readGroup(reader: FileReader, api: API, parent: Group): Group {
-
-    let closureIndex = reader.closureIndex;
-    let group = new BasicGroup(reader.readWord(), parent);
+    let documentation = reader.documentation;
+    let group = new BasicGroup(reader.readWord(), parent, documentation);
 
     reader.skipWhitespace();
     reader.assertCharacter('{');
     reader.skipWhitespace();
 
-    while (!reader.isCharacter('}') || closureIndex != reader.closureIndex) {
+    while (!reader.isCharacter('}')) {
 
         reader.skipWhitespace();
         let instruction = reader.readWord();

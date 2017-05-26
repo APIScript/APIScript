@@ -8,5 +8,6 @@ export interface Entity {
 }
 
 export class BasicEntity implements Entity {
-    public constructor(readonly name: string, readonly closure: ClosurePropertyType, readonly inherits?: string) {}
+    public constructor(readonly name: string, readonly closure: ClosurePropertyType,
+                       readonly inherits?: string, readonly documentation?: string) {}
 }

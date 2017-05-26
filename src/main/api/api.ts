@@ -15,8 +15,8 @@ export class BasicAPI extends BasicGroup implements API {
     private entities: Entity[] = [];
     private enums: Enum[] = [];
 
-    public constructor(name: string) {
-        super(name, null);
+    public constructor(name: string, documentation?: string) {
+        super(name, null, documentation);
     }
 
     public addEntity(entity: Entity) {
