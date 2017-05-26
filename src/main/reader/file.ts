@@ -34,6 +34,10 @@ export class FileReader {
             \n${this.data.substring(this.index + 1, this.data.length)}`;
     }
 
+    private stepBack() {
+
+    }
+
     private step(assetNotEnd: boolean = true) {
         if (assetNotEnd) { this.assertNotEnd(); }
         this.index++;
@@ -53,27 +57,8 @@ export class FileReader {
         if (!this.isReadingString) {
 
             if (this.isCharacter('/')) {
-                this.step();
-                if (this.isCharacter('/')) {
-                    this.readToCharacterOrEnd('\n');
+                if (this.peak() === '/') { this.readToCharacterOrEnd('\n'); }
 
-                } else if (this.isCharacter('*')) {
-
-                    let reading = true;
-                    while (reading) {
-                        this.readToCharacter('*');
-                        this.step();
-
-                        if (this.isCharacter('/')) {
-                            reading = false;
-                        }
-                    }
-
-                    this.step();
-
-                } else {
-                    this.error(`Unexpected character "${this.character()}", was expecting "/" or "*"`);
-                }
             } else if (this.isCharacter('#')) {
                 this.step();
 
@@ -108,6 +93,10 @@ export class FileReader {
         return this.data.charAt(this.index - 1);
     }
 
+    peak() {
+        return this.data.charAt(this.index + 1);
+    }
+
     get closureIndex() {
         return this.closureLevel;
     }
@@ -130,6 +119,10 @@ export class FileReader {
 
     isWordCharacter(): boolean {
         return /[-a-zA-Z_0-9]/.test(this.character());
+    }
+
+    isPathCharacter(): boolean {
+        return /[-a-zA-Z_0-9/]/.test(this.character());
     }
 
     isWhitespace(): boolean {
@@ -165,6 +158,19 @@ export class FileReader {
         let text = '';
 
         while (!this.isWhitespace() && this.isWordCharacter()) {
+            text += this.character();
+            this.next();
+        }
+
+        return text;
+    }
+
+    readPath(): string {
+        if (!this.isPathCharacter()) { this.error(`Expecting path character found "${this.character()}"`); }
+
+        let text = '';
+
+        while (!this.isWhitespace() && this.isPathCharacter()) {
             text += this.character();
             this.next();
         }

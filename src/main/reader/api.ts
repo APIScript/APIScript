@@ -41,7 +41,7 @@ export function readAPI(file: string): API {
         } else if (instruction === 'enum') {
             api.addEnum(readEnum(reader));
         } else if (instruction === 'import') {
-            let value = reader.readString();
+            let value = reader.readPath();
 
             api.addImport(value);
             reader.include(value);

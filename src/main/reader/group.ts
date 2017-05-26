@@ -22,7 +22,7 @@ export function readGroup(reader: FileReader, api: API, parent: Group): Group {
         reader.skipWhitespace();
 
         if (instruction === 'import') {
-            let value = reader.readString();
+            let value = reader.readPath();
 
             group.addImport(value);
             reader.include(value);
