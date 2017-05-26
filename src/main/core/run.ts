@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as configUtil from './config-util';
 
-import {readAPI} from "../reader/api-reader";
+import {readAPI} from "../reader/api";
 import {GeneratorModule} from "./generator-module";
 import {listGeneratorModules} from "./generator-module";
 import {API} from "../api/api";
@@ -73,31 +73,34 @@ export function run(globalConfig: Config = {}) {
     for (let module of localModules) { allModules.push(module); }
 
     if (config.list) {
-
         for (let module of allModules) { console.log(module[0]); }
         return;
     }
 
-    let api = readAPI(`${config.api}.api`);
+    let debug = config.debug ? config.debug : false;
+    let api = readAPI(`${config.api}.api`, debug);
 
-    if (config.generator) {
-        let name = config.generator;
-        let module: GeneratorModule;
+    if (config.generators) {
+        let generatorNames = config.generators;
 
-        for (let mod of allModules) {
+        for (let name of generatorNames) {
+            let module: GeneratorModule;
 
-            if (mod[0] === name) {
-                module = mod;
-                break;
+            for (let mod of allModules) {
+
+                if (mod[0] === name) {
+                    module = mod;
+                    break;
+                }
             }
-        }
 
-        if (!module) {
-            console.log(`Could not find the generator "${name}".`);
-            return;
-        }
+            if (!module) {
+                console.log(`Could not find the generator "${name}".`);
+                return;
+            }
 
-        runGenerator(api, module, globalConfig[name]);
+            runGenerator(api, module, globalConfig[name]);
+        }
 
     } else {
 

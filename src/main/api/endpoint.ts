@@ -1,7 +1,6 @@
 
 import {RequestMethod} from "./request-method";
-import {Property} from "./property/property";
-import {PropertyType} from "./property/property-type";
+import {PropertyType} from "../property/type/property-type";
 import {Group} from "./group";
 
 export interface Endpoint {
@@ -9,21 +8,18 @@ export interface Endpoint {
     readonly parent: Group;
     readonly requestMethod: RequestMethod;
     readonly requestType?: PropertyType;
-    readonly returnType?: PropertyType;
+    readonly bodyType?: PropertyType;
+    readonly respondType?: PropertyType;
     readonly url: string;
-
-    readonly propertyCount: number;
-    forEachProperty(callback: (property: Property, index: number) => void);
 }
 
 export class BasicEndpoint implements Endpoint {
-
-    private properties: Property[] = [];
+    public requestType?: PropertyType;
+    public bodyType?: PropertyType;
+    public respondType?: PropertyType;
 
     public constructor(readonly name: string, readonly parent: Group,
-                       readonly requestMethod: RequestMethod,
-                       readonly requestType?: PropertyType,
-                       readonly returnType?: PropertyType) {}
+                       readonly requestMethod: RequestMethod, readonly documentation?: string) {}
 
     public get url() {
         let url = this.name;
@@ -35,15 +31,5 @@ export class BasicEndpoint implements Endpoint {
         }
 
         return url;
-    }
-
-    public addProperty(property: Property) {
-        this.properties.push(property);
-    }
-
-    public get propertyCount() { return this.properties.length; }
-
-    public forEachProperty(callback: (property: Property, index: number) => void) {
-        this.properties.forEach((property, index) => { callback(property, index); });
     }
 }

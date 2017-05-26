@@ -1,5 +1,5 @@
 
-import {Property} from "./property/property";
+import {Property} from "../property/property";
 import {Endpoint} from "./endpoint";
 
 export interface Group {
@@ -22,13 +22,12 @@ export interface Group {
 }
 
 export class BasicGroup implements Group {
-
     private injects: Property[] = [];
     private groups: Group[] = [];
     private endpoints: Endpoint[] = [];
     private imports: string[] = [];
 
-    public constructor(readonly name: string, readonly parent: Group) {}
+    public constructor(readonly name: string, readonly parent: Group, readonly documentation?: string) {}
 
     public get url() {
         let url = this.name;

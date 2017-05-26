@@ -1,17 +1,13 @@
 
-import {PropertyType} from "./property-type";
+import {PropertyType} from "./type/property-type";
 
 export class Property {
-
-    readonly name: string;
-    readonly type: PropertyType;
     readonly constraints?: string;
     readonly isOptional?: boolean;
     readonly defaultValue?: string;
 
-    public constructor(name: string, type: PropertyType, constraints?: string, isOptional?: boolean, defaultValue?: string) {
-        this.name = name;
-        this.type = type;
+    public constructor(readonly name: string, readonly type: PropertyType, constraints?: string,
+                       isOptional?: boolean, defaultValue?: string, readonly documentation?: string) {
 
         if (constraints != null) { this.constraints = constraints; }
         if (isOptional) { this.isOptional = isOptional; }

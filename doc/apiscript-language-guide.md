@@ -45,11 +45,11 @@ An API by default has all the endpoints begin at **/api**. For example,
 if you have an endpoint at the root of your API called account, then the
 URL to access this would be **example.com/api/account**.
 
-This can be configured as the API closure accepts a string value to
+This can be configured as the API closure accepts a name to
 modify this.
 
 ```
-api "myAPI" {}
+api myAPI {}
 ```
 
 Using the previous example and specifying like shown, the URL would now be
@@ -65,13 +65,13 @@ Groups are defined in a similar way to APIs, although the name is
 not optional in a group.
 
 ```
-group "v1" {}
+group v1 {}
 ```
 
 Groups can be nested and can contain as many sub-groups as you want.
 
 ```
-group "v1" {
+group v1 {
     group "account" {}
     group "social" {}
 }
@@ -234,10 +234,10 @@ Endpoints are the calls made from clients to servers and the core of APIScript.
 There are four types of endpoints, get, put, post and delete.
 
 ```
-get "something" {}
-put "something" {}
-post "something" {}
-delete "something" {}
+get something {}
+put something {}
+post something {}
+delete something {}
 ```
 
 The four types are the basic HTTP methods and should be used as appropriate.
@@ -249,7 +249,7 @@ properties are sent to the server when calling the endpoint.
 
 ```
 // GET mydomain.com/api/something?id=xxxxxxx
-get "something" {
+get something {
     id: integer
 }
 ```
@@ -259,14 +259,14 @@ keyword.
 
 ```
 // endpoint call must contain an account entity in the body
-post "account" requests Account {}
+post account requests Account {}
 ```
 
 An entity can also be returned in the response from the server
 
 ```
 // endpoint returns an account entity to the client
-get "account" returns Account {}
+get account returns Account {}
 ```
 
 ## Import
@@ -287,7 +287,7 @@ entity Account {
 
 ```
 api {
-    import "entity"     // account entity is added to main.api
+    import entity     // account entity is added to main.api
 }
 ```
 
@@ -302,9 +302,9 @@ this property without having to define it multiple times.
 api {
     inject token: string
 
-    get "account" returns Account {}
+    get account returns Account {}
 
-    group "social" {
+    group social {
         get "friends" returns <User> {}
     }
 }

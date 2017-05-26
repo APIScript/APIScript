@@ -4,7 +4,6 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 export class FileReader {
-
     private characterIndex = 0;
     private lineIndex = 0;
 
@@ -13,13 +12,15 @@ export class FileReader {
     private data: string;
     private isReadingString = false;
 
-    public constructor(private file: string) {
+    private docComment: string = null;
+    private docLine: number = -1;
+
+    public constructor(private file: string, private debug = false) {
         this.data = shell.cat(file).toString();
         this.next();
     }
 
     include(file: string) {
-
         let fileDir = path.dirname(this.file);
 
         if (fileDir !== ".") {
@@ -38,6 +39,8 @@ export class FileReader {
         this.characterIndex++;
 
         if (this.isNewLine()) {
+            if (this.lineIndex != this.docLine) { this.docComment = null; }
+
             this.lineIndex++;
             this.characterIndex = 1;
         }
@@ -49,27 +52,22 @@ export class FileReader {
         if (!this.isReadingString) {
 
             if (this.isCharacter('/')) {
+                if (this.peak() === '/') { this.readToCharacterOrEnd('\n'); }
+
+            } else if (this.isCharacter('#')) {
                 this.step();
-                if (this.isCharacter('/')) {
-                    this.readToCharacterOrEnd('\n');
+                this.docLine = this.lineIndex;
 
-                } else if (this.isCharacter('*')) {
-
-                    let reading = true;
-                    while (reading) {
-                        this.readToCharacter('*');
-                        this.step();
-
-                        if (this.isCharacter('/')) {
-                            reading = false;
-                        }
-                    }
-
-                    this.step();
-
+                if (!this.docComment) {
+                    this.docComment = '';
                 } else {
-                    this.error(`Unexpected character "${this.character()}", was expecting "/" or "*"`);
+                    this.docComment += ' ';
                 }
+
+                this.skipWhitespaceOnLine();
+                this.docComment += this.readToNewLine();
+                this.step();
+
             } else if (this.isCharacter('{')) {
                 this.closureLevel++;
             } else if (this.isCharacter('}')) {
@@ -88,8 +86,12 @@ export class FileReader {
         return this.data.charAt(this.index - 1);
     }
 
-    get closureIndex() {
-        return this.closureLevel;
+    peak() {
+        return this.data.charAt(this.index + 1);
+    }
+
+    get documentation() {
+        return this.docComment;
     }
 
     isNewLine(): boolean {
@@ -105,7 +107,11 @@ export class FileReader {
     }
 
     isWordCharacter(): boolean {
-        return /[a-zA-Z_0-9]/.test(this.character());
+        return /[-a-zA-Z_0-9]/.test(this.character());
+    }
+
+    isPathCharacter(): boolean {
+        return /[-a-zA-Z_0-9/]/.test(this.character());
     }
 
     isWhitespace(): boolean {
@@ -135,13 +141,25 @@ export class FileReader {
     }
 
     readWord(): string {
+        if (this.isNumber()) { this.error('Word cannot begin with number character'); }
+        if (!this.isWordCharacter()) { this.error(`Expecting word character found "${this.character()}"`); }
 
-        if (this.isNumber()) {
-            this.error('Word cannot begin with number character');
-        }
         let text = '';
 
         while (!this.isWhitespace() && this.isWordCharacter()) {
+            text += this.character();
+            this.next();
+        }
+
+        return text;
+    }
+
+    readPath(): string {
+        if (!this.isPathCharacter()) { this.error(`Expecting path character found "${this.character()}"`); }
+
+        let text = '';
+
+        while (!this.isWhitespace() && this.isPathCharacter()) {
             text += this.character();
             this.next();
         }
@@ -171,10 +189,21 @@ export class FileReader {
         return text;
     }
 
-    readToSpace() {
+    readToSpace(): string {
         let text = '';
 
         while (!this.isWhitespace()) {
+            text += this.character();
+            this.next();
+        }
+
+        return text;
+    }
+
+    readToNewLine(): string {
+        let text = '';
+
+        while (!this.isCharacter('\r') && !this.isCharacter('\n')) {
             text += this.character();
             this.next();
         }
@@ -258,10 +287,15 @@ export class FileReader {
     }
 
     error(message?: string) {
-        fs.writeFileSync('error-log.api', this.data);
 
-        console.log(`Error reading script at line [${this.lineIndex}] character [${this.characterIndex}]`);
+        console.log(`Error reading script at line [${this.lineIndex + 1}] character [${this.characterIndex + 1}]`);
         if (message) { console.log(message); }
-        process.exit(0);
+
+        if (this.debug) {
+            fs.writeFileSync('apiscript-error.log', this.data);
+            throw new Error();
+        } else {
+            process.exit(0);
+        }
     }
 }

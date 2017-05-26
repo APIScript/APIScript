@@ -1,25 +1,26 @@
 
-import {FileReader} from "./file-reader";
-import {Property} from "../api/property/property";
-import {PropertyType} from "../api/property/property-type";
-import {readPropertyType} from "./property-type-reader";
-import {PrimitivePropertyType} from "../api/property/primitive-type";
+import {FileReader} from "./file";
+import {Property} from "../property/property";
+import {PropertyType} from "../property/type/property-type";
+import {readPropertyType} from "./property-type";
+import {API} from "../api/api";
 
-export function readProperty(reader: FileReader): Property {
-
+export function readProperty(reader: FileReader, api: API): Property {
+    let documentation = reader.documentation;
     let name = reader.readWord();
 
     reader.skipWhitespaceOnLine();
     reader.assertCharacter(':');
     reader.skipWhitespaceOnLine();
 
-    let type: PropertyType = readPropertyType(reader);
+    let type: PropertyType = readPropertyType(reader, api);
+    reader.skipWhitespaceOnLine();
 
     let isOptional = false;
     let constraints: string = null;
     let defaultValue: string = null;
 
-    while (!reader.isCharacter(';') && !reader.isCharacter('\n')) {
+    while (!reader.isCharacter(',') && !reader.isCharacter('\n') && !reader.isCharacter('}')) {
 
         if (reader.isCharacter('?')) {
             if (isOptional) {
@@ -43,11 +44,12 @@ export function readProperty(reader: FileReader): Property {
             reader.next();
             reader.skipWhitespaceOnLine();
 
-            if (!type.isPrimitive) {
+            let primitive = type.asPrimitive;
+            if (!primitive) {
                 reader.error('A default type can only be set on a primitive property');
             }
 
-            if (type === PrimitivePropertyType.String) {
+            if (primitive.asString) {
                 defaultValue = reader.readString();
             } else {
                 defaultValue = reader.readToSpace();
@@ -71,8 +73,6 @@ export function readProperty(reader: FileReader): Property {
 
     }
 
-    reader.next();
     reader.skipWhitespace();
-
-    return new Property(name, type, constraints, isOptional, defaultValue);
+    return new Property(name, type, constraints, isOptional, defaultValue, documentation);
 }

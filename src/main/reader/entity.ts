@@ -1,11 +1,11 @@
 
-import {FileReader} from "./file-reader";
+import {FileReader} from "./file";
 import {Entity, BasicEntity} from "../api/entity";
-import {readProperty} from "./property-reader";
+import {API} from "../api/api";
+import {readClosure} from "./closure";
 
-export function readEntity(reader: FileReader): Entity {
-
-    let closureIndex = reader.closureIndex;
+export function readEntity(reader: FileReader, api: API): Entity {
+    let documentation = reader.documentation;
 
     let entity: BasicEntity;
     let name = reader.readWord();
@@ -17,24 +17,18 @@ export function readEntity(reader: FileReader): Entity {
 
         if (instruction === 'extends') {
             reader.skipWhitespace();
-            entity = new BasicEntity(name, reader.readWord());
-
+            let inherits = reader.readWord();
             reader.skipWhitespace();
-            reader.assertCharacter('{');
+
+            entity = new BasicEntity(name, readClosure(reader, api), inherits, documentation);
             reader.skipWhitespace();
         } else {
             reader.error(`Invalid instruction "${instruction}" expected "{" or "extends"`);
         }
     } else {
-        entity = new BasicEntity(name);
-        reader.next();
+        entity = new BasicEntity(name, readClosure(reader, api), null, documentation);
         reader.skipWhitespace();
     }
-
-    while (!reader.isCharacter('}') || closureIndex != reader.closureIndex) {
-        entity.addProperty(readProperty(reader));
-    }
-    reader.next();
 
     return entity;
 }
