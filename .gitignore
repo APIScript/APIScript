@@ -6,5 +6,5 @@ node_modules
 build
 package
 test/build
-error-log.api
+apiscript-error.log
 npm-debug.log

@@ -292,9 +292,9 @@ export class FileReader {
     }
 
     error(message?: string) {
-        fs.writeFileSync('error-log.api', this.data);
+        fs.writeFileSync('apiscript-error.log', this.data);
 
-        console.log(`Error reading script at line [${this.lineIndex}] character [${this.characterIndex}]`);
+        console.log(`Error reading script at line [${this.lineIndex + 1}] character [${this.characterIndex + 1}]`);
         if (message) { console.log(message); }
         process.exit(0);
     }
