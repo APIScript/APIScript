@@ -4,7 +4,6 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 export class FileReader {
-
     private characterIndex = 0;
     private lineIndex = 0;
 
@@ -16,7 +15,7 @@ export class FileReader {
     private docComment: string = null;
     private docLine: number = -1;
 
-    public constructor(private file: string) {
+    public constructor(private file: string, private debug = false) {
         this.data = shell.cat(file).toString();
         this.next();
     }
@@ -32,10 +31,6 @@ export class FileReader {
 
         this.data = `${this.data.substring(0, this.index + 1)}\n${data}
             \n${this.data.substring(this.index + 1, this.data.length)}`;
-    }
-
-    private stepBack() {
-
     }
 
     private step(assetNotEnd: boolean = true) {
@@ -61,7 +56,6 @@ export class FileReader {
 
             } else if (this.isCharacter('#')) {
                 this.step();
-
                 this.docLine = this.lineIndex;
 
                 if (!this.docComment) {
@@ -69,11 +63,12 @@ export class FileReader {
                 } else {
                     this.docComment += ' ';
                 }
-
+                
                 this.skipWhitespaceOnLine();
-
                 this.docComment += this.readToNewLine();
                 this.step();
+
+                console.log(this.documentation);
 
             } else if (this.isCharacter('{')) {
                 this.closureLevel++;
@@ -95,10 +90,6 @@ export class FileReader {
 
     peak() {
         return this.data.charAt(this.index + 1);
-    }
-
-    get closureIndex() {
-        return this.closureLevel;
     }
 
     get documentation() {
@@ -302,6 +293,11 @@ export class FileReader {
 
         console.log(`Error reading script at line [${this.lineIndex + 1}] character [${this.characterIndex + 1}]`);
         if (message) { console.log(message); }
-        process.exit(0);
+
+        if (this.debug) {
+            throw new Error();
+        } else {
+            process.exit(0);
+        }
     }
 }

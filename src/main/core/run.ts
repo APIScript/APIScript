@@ -78,7 +78,8 @@ export function run(globalConfig: Config = {}) {
         return;
     }
 
-    let api = readAPI(`${config.api}.api`);
+    let debug = config.debug ? config.debug : false;
+    let api = readAPI(`${config.api}.api`, debug);
 
     if (config.generator) {
         let name = config.generator;

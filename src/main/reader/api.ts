@@ -9,10 +9,8 @@ import {readEnum} from "./enum";
 import {readEndpoint} from "./endpoint";
 import {readGroup} from "./group";
 
-export function readAPI(file: string): API {
-    let reader = new FileReader(file);
-    let closureIndex = reader.closureIndex;
-
+export function readAPI(file: string, debug = false): API {
+    let reader = new FileReader(file, debug);
     let api: BasicAPI;
 
     reader.skipWhitespace();
@@ -30,7 +28,7 @@ export function readAPI(file: string): API {
 
     reader.assertCharacter('{');
 
-    while (!reader.isEnd() && (!reader.isCharacter('}') || closureIndex != reader.closureIndex)) {
+    while (!reader.isEnd() && !reader.isCharacter('}')) {
 
         reader.skipWhitespace();
         let instruction = reader.readWord();
